@@ -1,0 +1,9 @@
+{
+  "name": "singly-linked-list",
+  "description": "Singly Linked List",
+  "version": "0.0.1",
+  "devDependencies": {
+    "mocha": "*",
+    "sinon": "*"
+  }
+}
