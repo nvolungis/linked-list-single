@@ -1,141 +1,89 @@
 var assert = require('assert'),
-    BST    = require('../bst.js');
+    SLL    = require('../linked_list_single.js');
 
-describe("BST", function(){
+describe("Singly Linked List", function(){
 
-  describe("#add", function(){
-    it("can add a node to a tree", function(){
-      var tree = new BST();
+  describe("#add_at_beginning", function(){
+    it("adds a node to the beginning of the list", function(){
+      var list = new SLL();
 
-      tree.add(1);
-      tree.add(3);
-      tree.add(4);
-
-      assert.deepEqual(tree.to_array(), [1,3,4]);
-    });
-
-    it("can be chained", function(){
-      var tree = new BST(); 
-
-      tree.add(1).add(2);
-
-      assert.deepEqual(tree.to_array(), [1,2]);
-    });
-
-    it("can add an array of values", function(){
-      var tree = new BST(); 
-
-      tree.add([1,2,3]);
-
-      assert.deepEqual(tree.to_array(), [1,2,3]);
+      list.add_at_beginning(1);
+      assert.deepEqual(list.to_array(), [1]);
+      list.add_at_beginning(2);
+      assert.deepEqual(list.to_array(), [2,1]);
     });
   });
 
-  describe('#to_array', function(){
-    it('can operate on an empty tree', function(){
-      var tree = new BST();
+  describe("#add_at_end", function(){
+    it("adds a node to the end of the list", function(){
+      var list = new SLL();
 
-      assert.deepEqual(tree.to_array(), []);
+      list.add_at_beginning(1);
+      list.add_at_end(3);
+
+      assert.deepEqual(list.to_array(), [1,3]);
+    });
+
+    it("can add a node to an empty list", function(){
+      var list = new SLL();
+
+      list.add_at_end(3);
+
+      assert.deepEqual(list.to_array(), [3]);
     });
   });
 
-  describe("#contains", function(){
-    it('can find a value', function(){
-      var tree = new BST();
+  // describe('#add_after', function(){
+  //   var list = new SLL();
+  //
+  //   list.add_at_beginning(1);
+  //   list.add_at_beginning(2);
+  //   list.add_at_beginning(3);
+  //
+  //   list.add_after(4, 2);
+  // });
+  //
 
-      tree.add(1).add(2).add(3);
+  describe("#find", function(){
+    it("can find a node in the list", function(){
+      var list = new SLL();
 
-      assert.equal(tree.contains(2), true);
+      list.add_at_beginning(2);
+      list.add_at_beginning(4);
+
+      assert.equal(list.find(4).value, 4);
     });
 
+    it("returns a null node if not found", function(){
+      var list = new SLL();
 
-    it('returns false if the value is not in the tree', function(){
-      var tree = new BST();
-      
-      tree.add(3).add(1).add(2).add(4);
-
-      assert.equal(tree.contains(5), false);
+      assert.equal(list.find(2).value, null); 
     });
 
+    describe("#add after", function(){
+      it("inserts the new node in the proper place", function(){
+        var list = new SLL(); 
 
-    it('returns false if searching on an empty tree', function(){
-      var tree = new BST();
+        list.add_at_beginning(1);
+        list.add_at_end(2);
+        list.add_at_end(3);
 
-      assert.equal(tree.contains(10), false);
-    });
-  });
+        list.add_after(2, 4);
 
-  describe("#length", function(){
-    it('returns the number of nodes in the tree', function(){
-      var tree = new BST(); 
+        assert.deepEqual(list.to_array(), [1,2,4,3]);
+      });
 
-      tree.add(1);
-      tree.add(4);
+      it("doesn't add anything if the node isn't found", function(){
+        var list = new SLL(); 
 
-      assert.equal(tree.length(), 2);
-    });
+        list.add_at_beginning(1);
+        list.add_at_end(2);
+        list.add_at_end(3);
 
-    it('returns 0 on an empty tree', function(){
-      var tree = new BST();
+        list.add_after(4, 4);
 
-      assert.equal(tree.length(), 0);
-    });
-  });
-
-  describe("#remove", function(){
-    it('can remove a node with no children', function(){
-      var tree = new BST();
-      tree.add(4).add(1).add(2);
-      tree.remove(2);
-
-      assert.deepEqual(tree.to_array(), [1,4]);
-    }); 
-
-    it('can remove a node with one child', function(){
-      var tree = new BST();
-
-      tree.add(4).add(1).add(2);
-      tree.remove(1);
-
-      assert.deepEqual(tree.to_array(), [2, 4]);
-    });
-
-    it('can remove a node with two children', function(){
-      var tree = new BST();
-
-      tree.add(4).add(2).add(3).add(1);
-      tree.remove(2);
-
-      assert.deepEqual(tree.to_array(), [1,3,4]);
-    });
-
-    it('can remove a root node with no children', function(){
-      var tree = new BST();
-
-      tree.add(1);
-      tree.remove(1);
-
-      assert.deepEqual(tree.to_array(), []);
-    });
-
-
-    it('can remova a root node with one child', function(){
-      var tree = new BST();
-
-      tree.add(1).add(2);
-      tree.remove(1);
-
-      assert.deepEqual(tree.to_array(), [2]);
-    });
-
-
-    it('can remove a root node with two children', function(){
-      var tree = new BST();
-
-      tree.add(2).add(1).add(3);
-      tree.remove(2);
-
-      assert.deepEqual(tree.to_array(), [1,3]);
+        assert.deepEqual(list.to_array(), [1,2,3]);
+      });
     });
   });
 });

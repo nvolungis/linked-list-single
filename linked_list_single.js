@@ -2,74 +2,83 @@
 
 (function(){
 
-  function BST(){
-    this.root = null;
+  function Cell(value){
+    this.value = value;
+    this.next = null;
+
+    this.clone = function(){
+      var clone = new Cell(this.value);
+      clone.next = this.next;
+
+      return clone;
+    }
   }
 
-  BST.prototype = {
-    constructor: BST,
+  function LinkedList(){
+     this._sentinal = new Cell();
+  }
 
-    add: function(value){
-      if(value instanceof Array){
-        value.forEach(function(val){
-          this.add(val); 
-        },this);
+  LinkedList.prototype = {
+    constructor: LinkedList,
 
-        return this;
-      }
+    //insert the cell directly after the sentinal
+    //O(1);
+    add_at_beginning: function(value){
+      var new_cell = new Cell(value); 
 
-      var current = null,
-          node = {
-            value: value,
-            left: null,
-            right: null
-          };
-
-      if(!this.root){
-        this.root = node;
-      } else {
-        current = this.root;
-
-        while(true){
-          if(value < current.value){
-            if(current.left == null){
-              current.left = node;
-              break;
-            }else {
-              current = current.left;
-            }
-          }else if(value > current.value){
-            if(current.right == null){
-              current.right = node;
-              break;
-            }else {
-              current = current.right;
-            }
-          }else {
-            break; 
-          }
-        }       
-      }
-
-      return this;
+      new_cell.next = this._sentinal.next;
+      this._sentinal.next = new_cell;
     },
 
-    traverse: function(callback){
-      function in_order(node){
-        if( node.left){
-          in_order(node.left); 
-        } 
+    //loop through the list and add the cell at the very end
+    //O(n)
+    add_at_end: function(value){
+      var new_cell = new Cell(value),
+          cur_cell = this._sentinal;
 
-        callback(node.value);
+      while(cur_cell.next != null){
+        cur_cell = cur_cell.next; 
+      }
 
-        if(node.right){
-          in_order(node.right);
-        }
-      } 
-
-      if(!!this.root) in_order(this.root);
+      cur_cell.next = new_cell;
     },
 
+    //insert the value v after the node n
+    //O(n)
+    add_after: function(n, v){
+      var cell = this.find(n),
+          new_cell = new Cell(v);
+
+      new_cell.next = cell.next;
+      cell.next = new_cell; 
+    },
+
+    //return the node with the provided value or a null node
+    //O(n)
+    find: function(v){
+      var cur_node = this._sentinal.next; 
+
+      while(cur_node){
+        if(cur_node.value == v) return cur_node;
+        cur_node = cur_node.next;
+      }
+
+      return new Cell();
+    },
+    
+    //visit every node in the list and call the callback for it
+    //O(n);
+    traverse: function(cb, ctx){
+      var cur_cell = this._sentinal.next;
+
+      while(cur_cell != null){
+        cb.call(ctx, cur_cell.value); 
+        cur_cell = cur_cell.next;
+      }
+    },
+
+    //return an array with all the values in the list
+    //O(n)
     to_array: function(){
       var arr = [];
 
@@ -78,136 +87,11 @@
       });
 
       return arr;
-    },
-
-    contains: function(needle){
-      var found = false;
-
-      this.traverse(function(value){
-        if(value == needle) {
-          found = true; 
-        } 
-      });
-
-      return found;
-    },
-
-    length: function(){
-      var len = 0;
-
-      this.traverse(function(){
-        len += 1; 
-      });
-
-      return len;
-    },
-
-    remove: function(value){
-      var found   = false,
-          parent  = null,
-          current = this.root,
-          child_count,
-          replace_right = true,
-          replacement = {},
-          replacement_parent = {};
-
-       //find the node
-       while(!found && current){
-         if( value < current.value){
-           parent = current;
-           current = current.left;
-         }else if(value > current.value){
-           parent = current;
-           current = current.right;
-         }else {
-           found = true;
-         }
-       }
-
-       if(!found) return;
-
-        child_count = (!!current.left ? 1:0) + (!!current.right ? 1:0);
-
-        if(current === this.root){
-          switch(child_count){
-          case 0:
-            this.root = null;
-            break;
-
-          case 1:
-            this.root = !!current.left ? current.left : current.right;
-            break;
-  
-          case 2:
-            replace_right = true;
-            replacement = current.right;
-            replacement_parent = current
-
-            while(!!replacement.left){
-              replace_right = false;
-              replacement_parent = replacement;
-              replacement = replacement.left;
-            }
-
-            //remove the smallest value from it's parent
-            if(replace_right){
-              replacement_parent.right = null; 
-            }else{
-              replacement_parent.left = null; 
-            }
-
-            //set the value of the node to replace to the smallest value from it's subtree
-            current.value = replacement.value;
-
-            break;
-          }
-        }else{
-          switch(child_count){
-          case 0:
-            if(current.value < parent.value){ //null out left pointer;
-              parent.left = null; 
-            }else{
-              parent.right = null;  
-            }
-            break;
-
-          case 1:
-            if(current.value < parent.value){
-              parent.left = !!current.left ? current.left : current.right;
-            }else{
-              parent.right = !!current.left ? current.left : current.right;
-            } 
-            break;
-
-          case 2:
-
-            //find the smallest value in the right subtree of the node to remove
-            var replace_right = true;
-            replacement = current.right;
-            replacement_parent = current
-
-            while(!!replacement.left){
-              replace_right = false;
-              replacement_parent = replacement;
-              replacement = replacement.left;
-            }
-
-            //remove the smallest value from it's parent
-            if(replace_right){
-              replacement_parent.right = null; 
-            }else{
-              replacement_parent.left = null; 
-            }
-
-            //set the value of the node to replace to the smallest value from it's subtree
-            current.value = replacement.value;
-
-            break;
-        }
-      }
     }
-  };
 
-  module.exports = BST; 
+  };
+  
+
+  module.exports = LinkedList; 
 
 }());
