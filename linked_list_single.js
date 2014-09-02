@@ -53,6 +53,24 @@
       cell.next = new_cell; 
     },
 
+    remove: function(v){
+      var cell = this.find_before(v);
+      cell.next = cell.next.next;      
+    },
+
+    //return the node before the one with the provided value or a null node
+    //O(n)
+    find_before: function(v){
+      var cur_node = this._sentinal; 
+
+      while(cur_node.next != null){
+        if(cur_node.next.value == v) return cur_node;
+        cur_node = cur_node.next;
+      }
+
+      return new Cell();
+    },
+
     //return the node with the provided value or a null node
     //O(n)
     find: function(v){
@@ -87,8 +105,43 @@
       });
 
       return arr;
-    }
+    },
 
+    //implements the insertionsort algorithm
+    //O(n^2)
+    sort: function(){
+      var new_list = new LinkedList(),
+          input    = this._sentinal.next,
+          after_me, next_cell;
+
+      while(input != null){
+        next_cell = input;
+        input = input.next;
+        after_me = new_list._sentinal;
+
+        while(after_me.next != null && after_me.next.value < next_cell.value){
+          after_me = after_me.next; 
+        }
+
+        next_cell.next = after_me.next;
+        after_me.next  = next_cell;
+      }
+
+      return new_list;
+    },
+
+    is_sorted: function(){
+      var cur_cell = this._sentinal.next;
+
+      while(cur_cell.next != null){
+        if(cur_cell.value > cur_cell.next.value){
+          return false;
+        }
+        cur_cell = cur_cell.next;
+      }
+
+      return true;
+    }
   };
   
 

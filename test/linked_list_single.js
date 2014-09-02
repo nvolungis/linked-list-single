@@ -85,6 +85,67 @@ describe("Singly Linked List", function(){
         assert.deepEqual(list.to_array(), [1,2,3]);
       });
     });
+
+
+    describe("find_before", function(){
+      it("returns the node before the provided value", function(){
+        var list = new SLL();
+
+        list.add_at_end(1);
+        list.add_at_end(2);
+        list.add_at_end(3);
+
+        assert.equal(list.find_before(2).value, 1);
+      });
+    });
+
+
+    describe("#remove", function(){
+      it("removes the value is it is found", function(){
+        var list = new SLL();
+
+        list.add_at_end(1);
+        list.add_at_end(2);
+        list.add_at_end(3);
+
+        list.remove(2);
+
+        assert.deepEqual(list.to_array(), [1,3]);
+      });
+    });
+
+    describe("#sort", function(){
+      it("returns a new linked list that is sorted", function(){
+        var list = new SLL(),
+            new_list;
+
+        list.add_at_end(3);
+        list.add_at_end(1);
+        list.add_at_end(5);
+        list.add_at_end(2);
+        list.add_at_end(3);
+
+        new_list = list.sort();
+
+        assert.deepEqual(new_list.to_array(), [1,2,3,3,5]);
+      });
+    });
+
+    describe("#is_sorted", function(){
+      it("returns true if the list is sorted", function(){
+        var list = new SLL();
+
+        list.add_at_end(3);
+        list.add_at_end(1);
+        list.add_at_end(5);
+        list.add_at_end(2);
+        list.add_at_end(3);
+
+        assert.equal(list.is_sorted(), false);
+        new_list = list.sort();
+        assert.equal(new_list.is_sorted(), true);
+      });
+    });
   });
 });
 
